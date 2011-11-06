@@ -3,6 +3,8 @@ import json
 import os
 import sys
 import urllib2
+import urllib
+import time
 
 from cement2.core import controller, handler, hook
 from cement2.core.exc import CementRuntimeError
@@ -110,5 +112,52 @@ class Deploy(controller.CementBaseController):
             if tarball_path and os.path.exists(tarball_path):
                 os.unlink(tarball_path)
         
-        # @@@ Poll for Status
-        print data
+        # Poll for Status
+        if data["status"] == "error":
+            print data["message"]
+        elif data["status"] == "success":
+            deployment_id = data["deployment"]
+            
+            if "url" in data:
+                instance_url = data["url"]
+            else:
+                instance_url = None
+            
+            print "Deploying..."
+            
+            while True:
+                params = {
+                    "version": __version__,
+                    "site_key": self.config.get("gondor", "site_key"),
+                    "instance_label": label,
+                    "task_id": deployment_id,
+                }
+                
+                url = "%s/task_status/" % "https://api.gondor.io"
+            
+                try:
+                    response = self.api._make_api_call(url, urllib.urlencode(params))
+                except urllib2.URLError:
+                    # @@@ add max retries
+                    continue
+                data = json.loads(response.read())
+                
+                if data["status"] == "error":
+                    print "[error]"
+                    print data["message"]
+                elif data["status"] == "success":
+                    if data["state"] == "finished":
+                        print "ok"
+                        if instance_url:
+                            print "Visit: %s" % instance_url
+                        break
+                elif data["state"] == "failed":
+                    print "[failed]"
+                    print data["reason"]
+                    sys.exit(1)
+                elif data["state"] == "locked":
+                    print "[locked]"
+                    print "Your deployment failed due to being locked. This means there is another deployment already in progress."
+                    sys.exit(1)
+                else:
+                    time.sleep(2)
