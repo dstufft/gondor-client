@@ -24,6 +24,7 @@ setup(
             "ssl/*.crt",
         ]
     },
+    namespace_packages = ["gondor.cli.ext"],
     zip_safe = False,
     entry_points = {
         "console_scripts": [
