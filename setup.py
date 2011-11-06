@@ -5,7 +5,8 @@ from setuptools import setup, find_packages
 from gondor import __version__
 
 
-install_requires = []
+install_requires = ["cement2>=1.9.2"]
+
 if sys.version_info < (2, 7):
     install_requires.append("argparse==1.1")
 
