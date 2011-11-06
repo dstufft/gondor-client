@@ -10,18 +10,25 @@ from gondor import utils
 
 
 from gondor.cli.output import StreamOutputHandler
+from gondor.cli.plugin import GondorPluginHandler
+
+# Gondor Config Directory
+# @@@ Handle Error Here
+GONDOR_CONFIG_DIRECTORY = os.path.join(utils.find_nearest(os.getcwd(), ".gondor"), ".gondor")
 
 # set default config options
 defaults = backend.defaults("gondor")
 
 defaults["base"]["debug"] = False
-defaults["base"]["config_files"] = [os.path.expanduser("~/.gondor")]
+defaults["base"]["config_files"] = [os.path.expanduser("~/.gondor"), os.path.join(GONDOR_CONFIG_DIRECTORY, "config")]
 
 defaults["base"]["output_handler"] = "stream"
 
-# @@@ Handle Error Here
+defaults["base"]["plugin_handler"] = "gondor_plugins"
+defaults["base"]["plugin_bootstrap_module"] = "gondor.cli.ext"
+
 defaults["project"] = {
-    "config_dir": os.path.join(utils.find_nearest(os.getcwd(), ".gondor"), ".gondor"),
+    "config_dir": GONDOR_CONFIG_DIRECTORY,
     "repo_root": None,
 }
 
@@ -49,11 +56,10 @@ handler.register(controllers.Deploy)
 handler.register(handlers.GitProjectPackager)
 handler.register(StreamOutputHandler)
 
+handler.register(GondorPluginHandler)
+
 # setup the application
 app.setup()
-
-# Parse the Project Config File
-app.config.parse_file(os.path.join(app.config.get("project", "config_dir"), "config"))
 
 # Add Local Environment Settings to the Config
 try:
