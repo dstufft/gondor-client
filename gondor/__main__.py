@@ -8,11 +8,16 @@ from gondor import interfaces
 from gondor import handlers
 from gondor import utils
 
+
+from gondor.cli.output import StreamOutputHandler
+
 # set default config options
 defaults = backend.defaults("gondor")
 
 defaults["base"]["debug"] = False
 defaults["base"]["config_files"] = [os.path.expanduser("~/.gondor")]
+
+defaults["base"]["output_handler"] = "stream"
 
 # @@@ Handle Error Here
 defaults["project"] = {
@@ -42,6 +47,7 @@ handler.register(controllers.Base)
 handler.register(controllers.Deploy)
 
 handler.register(handlers.GitProjectPackager)
+handler.register(StreamOutputHandler)
 
 # setup the application
 app.setup()
