@@ -63,6 +63,5 @@ app.config.merge({
 })
 
 
-# run the application
 def main():
     app.run()
