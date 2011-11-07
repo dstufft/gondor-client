@@ -79,6 +79,7 @@ class Command(controller.CementBaseController):
             self.render(dict(message="[ok]"))
             
             # Deploy To Gondor
+            self.render(dict(message="Pushing tarball to Gondor".ljust(35, "."), raw=True))
             with open(tarball_path, "rb") as tarball:
                 params = {
                     "version": __version__,
@@ -91,7 +92,6 @@ class Command(controller.CementBaseController):
                     "app": json.dumps(dict(self.config.items("app"))),
                 }
                 try:
-                    self.render(dict(message="Pushing tarball to Gondor".ljust(35, "."), raw=True))
                     response = self.api.deploy(params)
                 except KeyboardInterrupt:
                     self.render(dict(message="[canceled]"))
