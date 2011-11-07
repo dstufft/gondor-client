@@ -5,10 +5,8 @@ import sys
 import time
 
 # Remove These once dependency on them is gone
-import urllib
 import urllib2
 
-from gondor import __version__
 from gondor.api import Gondor
 from gondor.cli.core import controller
 from gondor.cli.core import handler
@@ -124,7 +122,7 @@ class Command(controller.CementBaseController):
             while processing:
                 try:
                     response = self.api.task_status(label, task_id)
-                except urllib2.URLError:
+                except urllib2.URLError:  # @@@ Raise some sort of Gondor Api Error
                     # @@@ add max retries
                     continue
                 
