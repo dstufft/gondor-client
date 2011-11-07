@@ -1,4 +1,5 @@
 import os
+import sys
 
 from cement2.core import backend, foundation, handler
 from cement2.core.exc import CementRuntimeError
@@ -52,7 +53,11 @@ def main():
     try:
         packager = handler.get("project_packager", app.config.get("gondor", "vcs"))(app.config)
     except CementRuntimeError:
-        raise  # @@@ Print an error message
+        app.render({
+            "level": "error",
+            "message": "Could not find a handler for the vcs: %s" % app.config.get("gondor", "vcs"),
+        })
+        sys.exit(1)
     
     app.config.merge({
         "project": {

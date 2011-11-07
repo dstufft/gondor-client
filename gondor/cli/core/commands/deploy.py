@@ -43,10 +43,8 @@ class Command(controller.CementBaseController):
         tarball_path = None
         
         try:
-            try:
-                packager = handler.get("project_packager", self.config.get("gondor", "vcs"))(self.config)
-            except CementRuntimeError:
-                raise  # @@@ Print an error message
+            # Shouldn't be able to get an error here. We already check this.
+            packager = handler.get("project_packager", self.config.get("gondor", "vcs"))(self.config)
             
             # Package Project
             tar_path, commit, sha = packager.package_project(label, commit)
