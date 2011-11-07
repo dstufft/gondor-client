@@ -1,11 +1,11 @@
 from cement2.core import handler
 
-from gondor.cli.core.handlers import outputs
-from gondor.cli.core.handlers import packagers
-from gondor.cli.core.handlers import plugins
+from gondor.cli.core.handlers.outputs import StreamOutputHandler
+from gondor.cli.core.handlers.packagers import GitProjectPackager
+from gondor.cli.core.handlers.plugins import GondorPluginHandler
 
 
 def register():
-    handler.register(outputs.StreamOutputHandler)
-    handler.register(packagers.GitProjectPackager)
-    handler.register(plugins.GondorPluginHandler)
+    handler.register(StreamOutputHandler)
+    handler.register(GitProjectPackager)
+    handler.register(GondorPluginHandler)
