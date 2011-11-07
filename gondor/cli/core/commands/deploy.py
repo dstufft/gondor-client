@@ -32,6 +32,11 @@ class Command(controller.CementBaseController):
     def usage_text(self):
         return "%s %s [--help] <label> <commit>" % (self.app.args.prog, self.meta.label)
     
+    def setup(self, *args, **kwargs):
+        super(Command, self).setup(*args, **kwargs)
+        
+        self.api = Gondor(self.config.get("auth", "username"), self.config.get("auth", "password"))
+    
     @controller.expose(hide=True)
     def default(self):
         label = self.pargs.label
@@ -72,10 +77,6 @@ class Command(controller.CementBaseController):
                 finally:
                     tarball.close()
             self.render(dict(message="[ok]"))
-            
-            # @@@ move this to self.setup() ?
-            # @@@ Allow using key instead of password as well
-            self.api = Gondor(self.config.get("auth", "username"), self.config.get("auth", "password"))
             
             # Deploy To Gondor
             with open(tarball_path, "rb") as tarball:
