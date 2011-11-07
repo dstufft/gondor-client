@@ -35,7 +35,8 @@ class Command(controller.CementBaseController):
         
         self.api = Gondor(
             username=self.config.get("auth", "username"),
-            password=self.config.get("auth", "password"),
+            password=self.config.get("auth", "password") if self.config.has_key("auth", "password") else None,
+            key=self.config.get("auth", "key") if self.config.has_key("auth", "key") else None,
             site_key=self.config.get("gondor", "site_key"),
         )
     
