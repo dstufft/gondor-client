@@ -1,16 +1,24 @@
 import base64
+import collections
+import urllib
 import urllib2
 
+from gondor import __version__
 from gondor import http
 
 
 class Gondor(object):
     
-    def __init__(self, username, password=None, key=None):
+    def __init__(self, username, password=None, key=None, site_key=None):
         if password is None and key is None:
             pass  # Raise an Error about not having password or key
+        
+        if site_key is None:
+            pass  # Raise an Error about not having a site_key
+        
         self.username = username
         self.password = key or password
+        self.site_key = site_key
     
     def _make_api_call(self, url, params, extra_handlers=None):
         handlers = [
@@ -35,8 +43,11 @@ class Gondor(object):
             # @@@ Pull These values from the config
             url = "%s/deploy/" % "https://api.gondor.io"
         
-        handlers = [
-            http.MultipartPostHandler,
-        ]
+        params.update({
+            "version": __version__,
+            "site_key": self.site_key,
+        })
+        
+        handlers = [http.MultipartPostHandler]
         
         return self._make_api_call(url, params, extra_handlers=handlers)

@@ -35,7 +35,11 @@ class Command(controller.CementBaseController):
     def setup(self, *args, **kwargs):
         super(Command, self).setup(*args, **kwargs)
         
-        self.api = Gondor(self.config.get("auth", "username"), self.config.get("auth", "password"))
+        self.api = Gondor(
+            username=self.config.get("auth", "username"),
+            password=self.config.get("auth", "password"),
+            site_key=self.config.get("gondor", "site_key"),
+        )
     
     @controller.expose(hide=True)
     def default(self):
@@ -81,16 +85,15 @@ class Command(controller.CementBaseController):
             # Deploy To Gondor
             self.render(dict(message="Pushing tarball to Gondor".ljust(35, "."), raw=True))
             with open(tarball_path, "rb") as tarball:
-                params = {
-                    "version": __version__,
-                    "site_key": self.config.get("gondor", "site_key"),
-                    "label": label,
-                    "sha": sha,
-                    "commit": commit,
-                    "tarball": tarball,
-                    "project_root":  os.path.relpath(self.config.get("project", "root"), self.config.get("project", "repo_root")),
-                    "app": json.dumps(dict(self.config.items("app"))),
-                }
+                params = dict(
+                    label=label,
+                    sha=sha,
+                    commit=commit,
+                    tarball=tarball,
+                    project_root=os.path.relpath(self.config.get("project", "root"), self.config.get("project", "repo_root")),
+                    app=json.dumps(dict(self.config.items("app"))),
+                )
+                
                 try:
                     response = self.api.deploy(params)
                 except KeyboardInterrupt:
