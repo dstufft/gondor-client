@@ -8,8 +8,6 @@ import time
 import urllib
 import urllib2
 
-from cement2.core.exc import CementRuntimeError
-
 from gondor import __version__
 from gondor.api import Gondor
 from gondor.cli.core import controller
@@ -50,7 +48,11 @@ class Command(controller.CementBaseController):
             tar_path, commit, sha = packager.package_project(label, commit)
             
             if tar_path is None:
-                pass  # @@@ Raise an Error
+                self.render({
+                    "level": "error",
+                    "message": "Their was an Error with the path given by the Project Packager for %s" % self.config.get("gondor", "vcs")
+                })
+                sys.exit(1)
             
             # Run pre_compress_tarball hook
             for res in hook.run("pre_compress_tarball", tar_path):
@@ -62,12 +64,14 @@ class Command(controller.CementBaseController):
             tarball_path = os.path.abspath(os.path.join(self.config.get("project", "repo_root"), "%s-%s.tar.gz" % (label, sha)))
             
             # Build the Tarball
+            self.render(dict(message="Building tarball".ljust(35, "."), raw=True))
             with open(tar_path, "rb") as tar_fp:
                 try:
                     tarball = gzip.open(tarball_path, mode="wb")
                     tarball.writelines(tar_fp)
                 finally:
                     tarball.close()
+            self.render(dict(message="[ok]"))
             
             # @@@ move this to self.setup() ?
             # @@@ Allow using key instead of password as well
@@ -86,13 +90,15 @@ class Command(controller.CementBaseController):
                     "app": json.dumps(dict(self.config.items("app"))),
                 }
                 try:
+                    self.render(dict(message="Pushing tarball to Gondor".ljust(35, "."), raw=True))
                     response = self.api.deploy(params)
                 except KeyboardInterrupt:
-                    print "Canceling uploading... [ok]"
+                    self.render(dict(message="[canceled]"))
                     sys.exit(1)
                 except urllib2.HTTPError:
                     raise  # @@@ Display an Error
                 else:
+                    self.render(dict(message="[ok]"))
                     data = json.loads(response.read())
         finally:
             if tar_path and os.path.exists(tar_path):
@@ -102,18 +108,16 @@ class Command(controller.CementBaseController):
         
         # Poll for Status
         if data["status"] == "error":
-            print data["message"]
+            self.render(dict(message=data["message"], level="error"))
         elif data["status"] == "success":
             deployment_id = data["deployment"]
+            instance_url = data.get("url")
             
-            if "url" in data:
-                instance_url = data["url"]
-            else:
-                instance_url = None
+            self.render(dict(message="Deploying".ljust(35, "."), raw=True))
             
-            print "Deploying..."
+            processing = True
             
-            while True:
+            while processing:
                 params = {
                     "version": __version__,
                     "site_key": self.config.get("gondor", "site_key"),
@@ -130,22 +134,23 @@ class Command(controller.CementBaseController):
                     continue
                 data = json.loads(response.read())
                 
-                if data["status"] == "error":
-                    print "[error]"
-                    print data["message"]
-                elif data["status"] == "success":
+                if data["status"] == "success":
                     if data["state"] == "finished":
-                        print "ok"
+                        processing = False
+                        self.render(dict(message="[ok]"))
+                        
                         if instance_url:
-                            print "Visit: %s" % instance_url
-                        break
+                            self.render(dict(message="\nVisit: %s" % instance_url))
                 elif data["state"] == "failed":
-                    print "[failed]"
-                    print data["reason"]
+                    self.render(dict(message="[failed]"))
+                    self.render(dict(message=data["reason"], level="error"))
                     sys.exit(1)
                 elif data["state"] == "locked":
-                    print "[locked]"
-                    print "Your deployment failed due to being locked. This means there is another deployment already in progress."
+                    self.render(dict(message="[locked]"))
+                    self.render(dict(message="Your deployment failed due to being locked. This means there is another deployment already in progress."))
                     sys.exit(1)
+                elif data["status"] == "error":
+                    self.render(dict(message="[error]"))
+                    self.render(dict(message=data["message"], level="error"))
                 else:
                     time.sleep(2)

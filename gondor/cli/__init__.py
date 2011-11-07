@@ -65,4 +65,6 @@ def main():
         }
     })
     
+    app.render(dict(message=""))
+    
     app.run()
