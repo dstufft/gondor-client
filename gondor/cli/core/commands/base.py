@@ -1,4 +1,4 @@
-from gondor.cli.core import controller
+from cement2.core import controller
 
 
 class Command(controller.CementBaseController):

@@ -1,4 +1,4 @@
-from gondor.cli.core import handler
+from cement2.core import handler
 
 from gondor.cli.core.commands import base
 from gondor.cli.core.commands import deploy

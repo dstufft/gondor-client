@@ -7,10 +7,11 @@ import time
 # Remove These once dependency on them is gone
 import urllib2
 
+from cement2.core import controller
+from cement2.core import handler
+from cement2.core import hook
+
 from gondor.api import Gondor
-from gondor.cli.core import controller
-from gondor.cli.core import handler
-from gondor.cli.core import hook
 
 
 class Command(controller.CementBaseController):

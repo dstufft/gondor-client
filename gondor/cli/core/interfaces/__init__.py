@@ -1,5 +1,6 @@
-from gondor.cli.core import handler
-from gondor.cli.core import hook
+from cement2.core import handler
+from cement2.core import hook
+
 from gondor.cli.core.interfaces import packagers
 
 

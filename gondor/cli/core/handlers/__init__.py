@@ -1,4 +1,4 @@
-from gondor.cli.core import handler
+from cement2.core import handler
 
 from gondor.cli.core.handlers import outputs
 from gondor.cli.core.handlers import packagers
