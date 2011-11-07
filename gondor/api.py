@@ -2,7 +2,6 @@ import base64
 import urllib2
 
 from gondor import http
-from gondor.progressbar import ProgressBar
 
 
 class Gondor(object):
@@ -32,13 +31,8 @@ class Gondor(object):
             # @@@ Pull These values from the config
             url = "%s/deploy/" % "https://api.gondor.io"
         
-        # @@@ Remove the forced writing to sysout from Deploying
-        pb = ProgressBar(0, 100, 77)
-        
         handlers = [
             http.MultipartPostHandler,
-            http.UploadProgressHandler(pb, ssl=True),
-            http.UploadProgressHandler(pb, ssl=False)
         ]
         
         return self._make_api_call(url, params, extra_handlers=handlers)
