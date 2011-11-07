@@ -1,5 +1,4 @@
 import base64
-import collections
 import urllib
 import urllib2
 
@@ -38,16 +37,21 @@ class Gondor(object):
         
         return opener.open(request)
     
-    def deploy(self, params, url=None):
-        if url is None:
-            # @@@ Pull These values from the config
-            url = "%s/deploy/" % "https://api.gondor.io"
+    def deploy(self, params,):
+        # @@@ Pull These values from the config
+        url = "%s/deploy/" % "https://api.gondor.io"
         
-        params.update({
-            "version": __version__,
-            "site_key": self.site_key,
-        })
+        params.update(dict(version=__version__, site_key=self.site_key))
         
         handlers = [http.MultipartPostHandler]
         
         return self._make_api_call(url, params, extra_handlers=handlers)
+    
+    def task_status(self, label, task_id):
+        # @@@ Pull these values from the config
+        url = "%s/task/status/" % "https://api.gondor.io"
+        
+        params = dict(label=label, task_id=task_id)
+        params.update(dict(version=__version__, site_key=self.site_key))
+        
+        return self._make_api_call(url, urllib.urlencode(params))

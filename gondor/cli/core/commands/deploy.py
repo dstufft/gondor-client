@@ -114,7 +114,7 @@ class Command(controller.CementBaseController):
         if data["status"] == "error":
             self.render(dict(message=data["message"], level="error"))
         elif data["status"] == "success":
-            deployment_id = data["deployment"]
+            task_id = data["deployment"]
             instance_url = data.get("url")
             
             self.render(dict(message="Deploying".ljust(35, "."), raw=True))
@@ -122,20 +122,12 @@ class Command(controller.CementBaseController):
             processing = True
             
             while processing:
-                params = {
-                    "version": __version__,
-                    "site_key": self.config.get("gondor", "site_key"),
-                    "instance_label": label,
-                    "task_id": deployment_id,
-                }
-                
-                url = "%s/task_status/" % "https://api.gondor.io"
-            
                 try:
-                    response = self.api._make_api_call(url, urllib.urlencode(params))
+                    response = self.api.task_status(label, task_id)
                 except urllib2.URLError:
                     # @@@ add max retries
                     continue
+                
                 data = json.loads(response.read())
                 
                 if data["status"] == "success":
