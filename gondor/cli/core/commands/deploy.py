@@ -32,7 +32,7 @@ class Deploy(controller.CementBaseController):
         return "%s %s [--help] <label> <commit>" % (self.app.args.prog, self.meta.label)
     
     def setup(self, *args, **kwargs):
-        super(Command, self).setup(*args, **kwargs)
+        super(Deploy, self).setup(*args, **kwargs)
         
         self.api = Gondor(
             username=self.config.get("auth", "username"),
