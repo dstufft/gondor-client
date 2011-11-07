@@ -28,7 +28,7 @@ setup(
     zip_safe=False,
     entry_points={
         "console_scripts": [
-            "gondor = gondor.cli:main",
+            "gondor = gondor.cli.core.__main__:main",
         ],
     },
     install_requires=install_requires,
