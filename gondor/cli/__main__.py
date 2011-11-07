@@ -28,7 +28,10 @@ def main():
         os.path.join(gondor_config_dir, "config")
     ]
     
-    defaults["project"] = dict(config_dir=gondor_config_dir)
+    defaults["project"] = {
+        "config_dir": gondor_config_dir,
+        "root": utils.find_nearest(os.getcwd(), ".gondor"),
+    }
     
     # create an application
     app = foundation.lay_cement("gondor", defaults=defaults)
@@ -54,7 +57,6 @@ def main():
     app.config.merge({
         "project": {
             "repo_root": packager.get_repo_root(os.getcwd()),
-            "root": utils.find_nearest(os.getcwd(), ".gondor"),
         }
     })
     
