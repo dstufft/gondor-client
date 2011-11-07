@@ -1,7 +1,7 @@
 import os
 
 from gondor import utils
-from gondor.interfaces import ProjectPackager
+from gondor.cli.core.interfaces.packagers import ProjectPackager
 
 
 class BaseProjectPackager(object):

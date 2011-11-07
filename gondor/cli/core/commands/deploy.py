@@ -2,32 +2,22 @@ import gzip
 import json
 import os
 import sys
-import urllib2
-import urllib
 import time
 
-from cement2.core import controller, handler, hook
+# Remove These once dependency on them is gone
+import urllib
+import urllib2
+
 from cement2.core.exc import CementRuntimeError
 
 from gondor import __version__
 from gondor.api import Gondor
+from gondor.cli.core import controller
+from gondor.cli.core import handler
+from gondor.cli.core import hook
 
 
-class Base(controller.CementBaseController):
-    class meta:
-        interface = controller.IController
-        label = "base"
-        description = "Effortless production Django hosting"
-        
-        defaults = {}
-        arguments = []
-    
-    @controller.expose(hide=True)
-    def default(self):
-        print "display help text"
-
-
-class Deploy(controller.CementBaseController):
+class Command(controller.CementBaseController):
     class meta:
         interface = controller.IController
         label = "deploy"

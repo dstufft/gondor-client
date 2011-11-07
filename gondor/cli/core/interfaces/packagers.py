@@ -1,4 +1,4 @@
-from cement2.core import interface
+from gondor.cli.core import interface
 
 
 class ProjectPackager(interface.Interface):
