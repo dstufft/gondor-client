@@ -11,10 +11,10 @@ from cement2.core import controller
 from cement2.core import handler
 from cement2.core import hook
 
-from gondor.api import Gondor
+from gondor.cli.core.interfaces import BaseCommand
 
 
-class Deploy(controller.CementBaseController):
+class Deploy(BaseCommand):
     class meta:
         interface = controller.IController
         label = "deploy"
@@ -30,16 +30,6 @@ class Deploy(controller.CementBaseController):
     @property
     def usage_text(self):
         return "%s %s [--help] <label> <commit>" % (self.app.args.prog, self.meta.label)
-    
-    def setup(self, *args, **kwargs):
-        super(Deploy, self).setup(*args, **kwargs)
-        
-        self.api = Gondor(
-            username=self.config.get("auth", "username"),
-            password=self.config.get("auth", "password") if self.config.has_key("auth", "password") else None,
-            key=self.config.get("auth", "key") if self.config.has_key("auth", "key") else None,
-            site_key=self.config.get("gondor", "site_key"),
-        )
     
     @controller.expose(hide=True)
     def default(self):

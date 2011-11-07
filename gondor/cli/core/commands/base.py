@@ -1,7 +1,9 @@
 from cement2.core import controller
 
+from gondor.cli.core.interfaces import BaseCommand
 
-class Base(controller.CementBaseController):
+
+class Base(BaseCommand):
     class meta:
         interface = controller.IController
         label = "base"
