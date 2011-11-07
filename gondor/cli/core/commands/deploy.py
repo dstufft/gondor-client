@@ -14,7 +14,7 @@ from cement2.core import hook
 from gondor.api import Gondor
 
 
-class Command(controller.CementBaseController):
+class Deploy(controller.CementBaseController):
     class meta:
         interface = controller.IController
         label = "deploy"

@@ -5,5 +5,5 @@ from gondor.cli.core.commands import deploy
 
 
 def register():
-    handler.register(base.Command)
-    handler.register(deploy.Command)
+    handler.register(base.Base)
+    handler.register(deploy.Deploy)

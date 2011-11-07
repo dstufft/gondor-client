@@ -1,7 +1,7 @@
 from cement2.core import controller
 
 
-class Command(controller.CementBaseController):
+class Base(controller.CementBaseController):
     class meta:
         interface = controller.IController
         label = "base"
