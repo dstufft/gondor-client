@@ -25,3 +25,4 @@ class StreamOutputHandler(object):
         if "message" in data:
             msg = data["message"] if data.get("raw", False) else "%s\n" % data["message"]
             stream.write(msg)
+            stream.flush()
