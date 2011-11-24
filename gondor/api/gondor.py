@@ -10,6 +10,35 @@ DEFAULT_ENDPOINTS = dict(
     deploy="%(api)s/deploy/",
     task_status="%(api)s/task/status/"
 )
+DEFAULT_ENDPOINTS = {
+    "deploy": "%(api)s/deploy/",
+    "instance.create": "%(api)s/instance/create/",
+    "task.status": "%(api)s/task/status/",
+}
+
+
+class Instance(object):
+    
+    def __init__(self, session, api_url, endpoints, default_params):
+        self.requests = session
+        self.api_url = api_url
+        self.endpoints = endpoints
+        self.default_params = default_params
+    
+    def create(self, label, kind, project_root):
+        url = self.endpoints["instance.create"] % dict(api=self.api_url)
+        
+        data = copy.deepcopy(self.default_params)
+        data.update({
+            "label": label,
+            "kind": kind,
+            "project_root": project_root,
+        })
+        
+        response = self.requests.post(url, data=data)
+        response.raise_for_status()
+        
+        return response
 
 
 class Gondor(object):
@@ -35,6 +64,9 @@ class Gondor(object):
         }
         
         self.requests = requests.session(auth=self.auth)
+        
+        # Add Sub API
+        self.instance = Instance(self.requests, self.api_url, self.endpoints, self.default_params)
     
     def get_url(self, endpoint):
         endpoint_url = self.endpoints.get(endpoint)
