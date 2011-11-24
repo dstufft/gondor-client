@@ -1,15 +1,8 @@
-import gzip
 import json
 import os
-import sys
-import time
-
-# Remove These once dependency on them is gone
-import urllib2
 
 from cement2.core import controller
 from cement2.core import handler
-from cement2.core import hook
 
 from gondor.api import requests
 from gondor.cli.core.interfaces import BaseCommand
