@@ -12,6 +12,7 @@ DEFAULT_ENDPOINTS = {
     "instance.delete": "%(api)s/instance/delete/",
     "instance.deploy": "%(api)s/instance/deploy/",
     "instance.list": "%(api)s/site/instances/",
+    "instance.sqldump": "%(api)s/instance/sqldump/",
     
     "task.status": "%(api)s/task/status/",
 }
@@ -68,6 +69,23 @@ class Instance(object):
         data = copy.deepcopy(self.default_params)
         
         response = self.requests.get(url, params=data)
+        response.raise_for_status()
+        
+        return response
+    
+    def sqldump(self, label):
+        url = self.endpoints["instance.sqldump"] % dict(api=self.api_url)
+        
+        data = copy.deepcopy(self.default_params)
+        data.update({"label": label})
+        
+        response = self.requests.post(url, data=data)
+        response.raise_for_status()
+        
+        return response
+    
+    def fetchdump(self, url):
+        response = self.requests.get(url)
         response.raise_for_status()
         
         return response
