@@ -1,11 +1,13 @@
 from __future__ import absolute_import
 
 import base64
+import copy
 import urllib
 import urllib2
 
 from gondor import __version__
 from gondor import http
+from gondor.api import requests
 
 DEFAULT_API = "https://api.gondor.io"
 DEFAULT_ENDPOINTS = dict(
@@ -29,6 +31,14 @@ class Gondor(object):
         self.username = username
         self.password = key or password
         self.site_key = site_key
+        
+        self.auth = (self.username, self.password)
+        self.default_params = {
+            "version": __version__,
+            "site_key": self.site_key,
+        }
+        
+        self.requests = requests.session(auth=self.auth)
     
     def _make_api_call(self, url, params, extra_handlers=None):
         handlers = [
@@ -53,14 +63,13 @@ class Gondor(object):
         if endpoint_url is not None:
             return endpoint_url % dict(api=self.api_url)
     
-    def deploy(self, params):
+    def deploy(self, params, tarball):
         url = self.get_url("deploy")
         
-        params.update(dict(version=__version__, site_key=self.site_key))
+        data = copy.deepcopy(self.default_params)
+        data.update(params)
         
-        handlers = [http.MultipartPostHandler]
-        
-        return self._make_api_call(url, params, extra_handlers=handlers)
+        return self.requests.post(url, data=data, files={"tarball": tarball})
     
     def task_status(self, label, task_id):
         url = self.get_url("task_status")

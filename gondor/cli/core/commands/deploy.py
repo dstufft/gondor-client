@@ -79,13 +79,12 @@ class Deploy(BaseCommand):
                     label=label,
                     sha=sha,
                     commit=commit,
-                    tarball=tarball,
                     project_root=os.path.relpath(self.config.get("project", "root"), self.config.get("project", "repo_root")),
                     app=json.dumps(dict(self.config.items("app"))),
                 )
                 
                 try:
-                    response = self.api.deploy(params)
+                    response = self.api.deploy(params, tarball=tarball)
                 except KeyboardInterrupt:
                     self.render(dict(message="[canceled]"))
                     sys.exit(1)
@@ -93,7 +92,7 @@ class Deploy(BaseCommand):
                     raise  # @@@ Display an Error
                 else:
                     self.render(dict(message="[ok]"))
-                    data = json.loads(response.read())
+                    data = json.loads(response.content)
         finally:
             if tar_path and os.path.exists(tar_path):
                 os.unlink(tar_path)
