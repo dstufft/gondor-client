@@ -14,7 +14,7 @@ class Create(BaseCommand):
     class meta:
         interface = controller.IController
         label = "create"
-        description = "deploy your applicaton to Gondor"
+        description = "creates a new instance of your Gondor site"
         
         defaults = dict()
         
