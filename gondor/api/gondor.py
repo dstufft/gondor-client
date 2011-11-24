@@ -1,12 +1,8 @@
 from __future__ import absolute_import
 
-import base64
 import copy
-import urllib
-import urllib2
 
 from gondor import __version__
-from gondor import http
 from gondor.api import requests
 
 DEFAULT_API = "https://api.gondor.io"
@@ -39,24 +35,6 @@ class Gondor(object):
         }
         
         self.requests = requests.session(auth=self.auth)
-    
-    def _make_api_call(self, url, params, extra_handlers=None):
-        handlers = [
-            http.HTTPSHandler,
-        ]
-        
-        if extra_handlers is not None:
-            handlers.extend(extra_handlers)
-        
-        opener = urllib2.build_opener(*handlers)
-        request = urllib2.Request(url, params)
-        
-        request.add_unredirected_header(
-            "Authorization",
-            "Basic %s" % base64.b64encode("%s:%s" % (self.username, self.password)).strip()
-        )
-        
-        return opener.open(request)
     
     def get_url(self, endpoint):
         endpoint_url = self.endpoints.get(endpoint)
