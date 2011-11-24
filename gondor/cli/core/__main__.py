@@ -38,6 +38,8 @@ def main():
         "root": utils.find_nearest(os.getcwd(), ".gondor"),
     }
     
+    defaults["ext"] = {}
+    
     # create an application
     app = foundation.lay_cement("gondor", defaults=defaults)
     
