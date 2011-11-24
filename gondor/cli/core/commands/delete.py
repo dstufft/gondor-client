@@ -2,7 +2,6 @@ import json
 import sys
 
 from cement2.core import controller
-from cement2.core import handler
 
 from gondor.api import requests
 from gondor.cli.core.interfaces import BaseCommand
