@@ -29,6 +29,10 @@ def main():
         os.path.join(gondor_config_dir, "config")
     ]
     
+    defaults["log"] = {
+        "to_console": False,
+    }
+    
     defaults["project"] = {
         "config_dir": gondor_config_dir,
         "root": utils.find_nearest(os.getcwd(), ".gondor"),
