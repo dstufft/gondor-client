@@ -9,7 +9,9 @@ DEFAULT_API = "https://api.gondor.io"
 
 DEFAULT_ENDPOINTS = {
     "instance.create": "%(api)s/instance/create/",
+    "instance.delete": "%(api)s/instance/delete/",
     "instance.deploy": "%(api)s/instance/deploy/",
+    
     "task.status": "%(api)s/task/status/",
 }
 
@@ -31,6 +33,17 @@ class Instance(object):
             "kind": kind,
             "project_root": project_root,
         })
+        
+        response = self.requests.post(url, data=data)
+        response.raise_for_status()
+        
+        return response
+    
+    def delete(self, label):
+        url = self.endpoints["instance.delete"] % dict(api=self.api_url)
+        
+        data = copy.deepcopy(self.default_params)
+        data.update({"label": label})
         
         response = self.requests.post(url, data=data)
         response.raise_for_status()
