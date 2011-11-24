@@ -85,7 +85,7 @@ class Deploy(BaseCommand):
                 )
                 
                 try:
-                    response = self.api.deploy(params, tarball=tarball)
+                    response = self.api.instance.deploy(params, tarball=tarball)
                 except KeyboardInterrupt:
                     self.render(dict(message="[canceled]"))
                     sys.exit(1)

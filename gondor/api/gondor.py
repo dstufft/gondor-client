@@ -6,13 +6,10 @@ from gondor import __version__
 from gondor.api import requests
 
 DEFAULT_API = "https://api.gondor.io"
-DEFAULT_ENDPOINTS = dict(
-    deploy="%(api)s/deploy/",
-    task_status="%(api)s/task/status/"
-)
+
 DEFAULT_ENDPOINTS = {
-    "deploy": "%(api)s/deploy/",
     "instance.create": "%(api)s/instance/create/",
+    "instance.deploy": "%(api)s/instance/deploy/",
     "task.status": "%(api)s/task/status/",
 }
 
@@ -36,6 +33,17 @@ class Instance(object):
         })
         
         response = self.requests.post(url, data=data)
+        response.raise_for_status()
+        
+        return response
+    
+    def deploy(self, params, tarball):
+        url = self.endpoints["instance.deploy"] % dict(api=self.api_url)
+        
+        data = copy.deepcopy(self.default_params)
+        data.update(params)
+        
+        response = self.requests.post(url, data=data, files={"tarball": tarball})
         response.raise_for_status()
         
         return response
@@ -73,19 +81,8 @@ class Gondor(object):
         if endpoint_url is not None:
             return endpoint_url % dict(api=self.api_url)
     
-    def deploy(self, params, tarball):
-        url = self.get_url("deploy")
-        
-        data = copy.deepcopy(self.default_params)
-        data.update(params)
-        
-        response = self.requests.post(url, data=data, files={"tarball": tarball})
-        response.raise_for_status()
-        
-        return response
-    
     def task_status(self, label, task_id):
-        url = self.get_url("task_status")
+        url = self.endpoints["task.status"] % dict(api=self.api_url)
         
         params = copy.deepcopy(self.default_params)
         params.update({
