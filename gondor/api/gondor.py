@@ -11,6 +11,7 @@ DEFAULT_ENDPOINTS = {
     "instance.create": "%(api)s/instance/create/",
     "instance.delete": "%(api)s/instance/delete/",
     "instance.deploy": "%(api)s/instance/deploy/",
+    "instance.list": "%(api)s/site/instances/",
     
     "task.status": "%(api)s/task/status/",
 }
@@ -57,6 +58,16 @@ class Instance(object):
         data.update(params)
         
         response = self.requests.post(url, data=data, files={"tarball": tarball})
+        response.raise_for_status()
+        
+        return response
+    
+    def list(self):
+        url = self.endpoints["instance.list"] % dict(api=self.api_url)
+        
+        data = copy.deepcopy(self.default_params)
+        
+        response = self.requests.get(url, params=data)
         response.raise_for_status()
         
         return response
