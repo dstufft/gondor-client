@@ -8,6 +8,8 @@ class ProjectPackager(interface.Interface):
     # Must be provided by the implementation
     meta = interface.Attribute("Handler meta-data")
     
+    current_working = interface.Attribute("commit identifier for the current working version")
+    
     def __init__(self, config):
         """
         This function takes a config option that represents the application config.

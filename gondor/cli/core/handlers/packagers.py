@@ -16,6 +16,8 @@ class GitProjectPackager(BaseProjectPackager):
         interface = ProjectPackager
         label = "git"
     
+    current_working = "HEAD"
+    
     def get_repo_root(self, directory):
         try:
             return utils.find_nearest(directory, ".git")
@@ -60,6 +62,8 @@ class MercurialProjectPackager(BaseProjectPackager):
     class meta:
         interface = ProjectPackager
         label = "hg"
+    
+    current_working = "tip"
     
     def get_repo_root(self, directory):
         try:
