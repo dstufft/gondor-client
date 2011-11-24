@@ -69,12 +69,21 @@ class Gondor(object):
         data = copy.deepcopy(self.default_params)
         data.update(params)
         
-        return self.requests.post(url, data=data, files={"tarball": tarball})
+        response = self.requests.post(url, data=data, files={"tarball": tarball})
+        response.raise_for_status()
+        
+        return response
     
     def task_status(self, label, task_id):
         url = self.get_url("task_status")
         
-        params = dict(label=label, task_id=task_id)
-        params.update(dict(version=__version__, site_key=self.site_key))
+        params = copy.deepcopy(self.default_params)
+        params.update({
+            "label": label,
+            "task_id": task_id,
+        })
         
-        return self._make_api_call(url, urllib.urlencode(params))
+        response = self.requests.get(url, params=params)
+        response.raise_for_status()
+        
+        return response
