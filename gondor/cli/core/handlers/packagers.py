@@ -17,7 +17,10 @@ class GitProjectPackager(BaseProjectPackager):
         label = "git"
     
     def get_repo_root(self, directory):
-        return utils.find_nearest(directory, ".git")
+        try:
+            return utils.find_nearest(directory, ".git")
+        except OSError:
+            return None
     
     def package_project(self, label, commit):
         sha = None
@@ -59,7 +62,10 @@ class MercurialProjectPackager(BaseProjectPackager):
         label = "hg"
     
     def get_repo_root(self, directory):
-        return utils.find_nearest(directory, ".hg")
+        try:
+            return utils.find_nearest(directory, ".hg")
+        except OSError:
+            return None
     
     def package_project(self, label, commit):
         sha = None
