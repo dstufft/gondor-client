@@ -11,6 +11,7 @@ from cement2.core import controller
 from cement2.core import handler
 from cement2.core import hook
 
+from gondor.api import requests
 from gondor.cli.core.interfaces import BaseCommand
 
 
@@ -113,11 +114,10 @@ class Deploy(BaseCommand):
             while processing:
                 try:
                     response = self.api.task_status(label, task_id)
-                except urllib2.URLError:  # @@@ Raise some sort of Gondor Api Error
-                    # @@@ add max retries
-                    continue
+                except requests.exceptions.HTTPError:
+                    continue  # @@@ Add some sort of Max Retries
                 
-                data = json.loads(response.read())
+                data = json.loads(response.content)
                 
                 if data["status"] == "success":
                     if data["state"] == "finished":
@@ -126,16 +126,17 @@ class Deploy(BaseCommand):
                         
                         if instance_url:
                             self.render(dict(message="\nVisit: %s" % instance_url))
-                elif data["state"] == "failed":
-                    self.render(dict(message="[failed]"))
-                    self.render(dict(message=data["reason"], level="error"))
-                    sys.exit(1)
-                elif data["state"] == "locked":
-                    self.render(dict(message="[locked]"))
-                    self.render(dict(message="Your deployment failed due to being locked. This means there is another deployment already in progress."))
-                    sys.exit(1)
+                    elif data["state"] == "failed":
+                        self.render(dict(message="[failed]"))
+                        self.render(dict(message=data["reason"], level="error"))
+                        sys.exit(1)
+                    elif data["state"] == "locked":
+                        self.render(dict(message="[locked]"))
+                        self.render(dict(message="\nYour deployment failed due to being locked. This means there is another deployment already in progress."))
+                        sys.exit(1)
                 elif data["status"] == "error":
                     self.render(dict(message="[error]"))
                     self.render(dict(message=data["message"], level="error"))
-                else:
-                    time.sleep(2)
+                    sys.exit(1)
+                
+                time.sleep(2)
