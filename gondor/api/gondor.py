@@ -73,6 +73,29 @@ class Instance(object):
         return response
 
 
+class Task(object):
+    
+    def __init__(self, session, api_url, endpoints, default_params):
+        self.requests = session
+        self.api_url = api_url
+        self.endpoints = endpoints
+        self.default_params = default_params
+    
+    def status(self, label, task_id):
+        url = self.endpoints["task.status"] % dict(api=self.api_url)
+        
+        params = copy.deepcopy(self.default_params)
+        params.update({
+            "label": label,
+            "task_id": task_id,
+        })
+        
+        response = self.requests.get(url, params=params)
+        response.raise_for_status()
+        
+        return response
+
+
 class Gondor(object):
     
     def __init__(self, username, password=None, key=None, site_key=None, api_url=None, endpoints=None):
@@ -99,22 +122,4 @@ class Gondor(object):
         
         # Add Sub API
         self.instance = Instance(self.requests, self.api_url, self.endpoints, self.default_params)
-    
-    def get_url(self, endpoint):
-        endpoint_url = self.endpoints.get(endpoint)
-        if endpoint_url is not None:
-            return endpoint_url % dict(api=self.api_url)
-    
-    def task_status(self, label, task_id):
-        url = self.endpoints["task.status"] % dict(api=self.api_url)
-        
-        params = copy.deepcopy(self.default_params)
-        params.update({
-            "label": label,
-            "task_id": task_id,
-        })
-        
-        response = self.requests.get(url, params=params)
-        response.raise_for_status()
-        
-        return response
+        self.task = Task(self.requests, self.api_url, self.endpoints, self.default_params)

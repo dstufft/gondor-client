@@ -113,7 +113,7 @@ class Deploy(BaseCommand):
             
             while processing:
                 try:
-                    response = self.api.task_status(label, task_id)
+                    response = self.api.task.status(label, task_id)
                 except requests.exceptions.HTTPError:
                     continue  # @@@ Add some sort of Max Retries
                 
